@@ -1,10 +1,10 @@
-import {Button, Center, Image, Text, VStack} from 'native-base';
+import {Button, Center, HStack, Image, Text, VStack} from 'native-base';
 import React, {useEffect} from 'react';
 import Logo from '../../assets/Icon.png';
 import {InputField} from '@components';
 import {useForm} from 'react-hook-form';
 import {navigate} from '@commons/RootNavigation';
-// import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {todoAdded} from '@redux/slices/todosSlices';
 import {login} from '@redux/slices/authSlices';
 
@@ -73,6 +73,17 @@ const Login = () => {
             LOGIN
           </Text>
         </Button>
+        <HStack alignItems="center" mt={2}>
+          <Text fontWeight="bold">dont have an account.?</Text>
+          <Button
+            onPress={() => {
+              navigate('SignUp');
+            }}
+            variant="unstyled"
+            colorScheme="darkBlue">
+            Create Account
+          </Button>
+        </HStack>
       </Center>
     </VStack>
   );

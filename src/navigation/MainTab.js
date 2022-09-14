@@ -60,8 +60,6 @@ const MainTab = () => {
         },
         tabBarShowLabel: false,
         tabBarStyle: {
-          // paddingVertical: 8,
-          // paddingHorizontal: 12,
           height: 65,
           borderTopWidth: 1,
           borderTopColor: '#E4E7EB',

@@ -22,6 +22,7 @@ module.exports = {
           '@screens': './src/screens',
           '@commons': './src/commons',
           '@components': './src/components',
+          '@redux': './src/redux',
         },
       },
     ],
