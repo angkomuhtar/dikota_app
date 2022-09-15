@@ -3,12 +3,12 @@ import React, {useEffect} from 'react';
 import Logo from '../../assets/Icon.png';
 import {InputField} from '@components';
 import {useForm} from 'react-hook-form';
-import {navigate} from '@commons/RootNavigation';
+import {navigate, push} from '@commons/RootNavigation';
 import {useDispatch, useSelector} from 'react-redux';
 import {todoAdded} from '@redux/slices/todosSlices';
 import {login} from '@redux/slices/authSlices';
 
-const Login = () => {
+const Login = props => {
   const {todos, auth} = useSelector(state => state);
   const dispatch = useDispatch();
   console.log(auth);
@@ -77,7 +77,7 @@ const Login = () => {
           <Text fontWeight="bold">dont have an account.?</Text>
           <Button
             onPress={() => {
-              navigate('SignUp');
+              props.navigation.push('SignUp');
             }}
             variant="unstyled"
             colorScheme="darkBlue">
