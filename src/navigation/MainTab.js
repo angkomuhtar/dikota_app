@@ -3,8 +3,9 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {HStack, Icon, View, Text} from 'native-base';
 import Ion from 'react-native-vector-icons/Ionicons';
 import Home from '../screens/Home';
-import Setting from '../screens/Setting';
-import History from '../screens/History';
+import Setting from '@screens/Setting';
+import History from '@screens/History';
+import Chat from '@screens/ChatList';
 
 const Tab = createBottomTabNavigator();
 
@@ -23,9 +24,12 @@ const MainTab = () => {
             label = 'Home';
           } else if (route.name === 'history') {
             iconName = focused ? 'today' : 'today-outline';
-            label = 'Appointment';
+            label = 'Mentor';
           } else if (route.name === 'setting') {
             iconName = focused ? 'cog' : 'cog-outline';
+            label = 'Setting';
+          } else if (route.name === 'chat') {
+            iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
             label = 'Setting';
           }
 
@@ -48,7 +52,7 @@ const MainTab = () => {
                 <Text
                   fontFamily="mulish"
                   ml={2}
-                  fontSize={10}
+                  fontSize={8}
                   fontWeight="black"
                   color="#2F80ED"
                   textTransform="uppercase">
@@ -67,8 +71,8 @@ const MainTab = () => {
       })}>
       <Tab.Screen name="home" component={Home} />
       <Tab.Screen name="history" component={History} />
+      <Tab.Screen name="chat" component={Chat} />
       <Tab.Screen name="setting" component={Setting} />
-      {/* <Tab.Screen name="account" component={Setting} /> */}
     </Tab.Navigator>
   );
 };

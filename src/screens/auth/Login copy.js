@@ -4,31 +4,28 @@ import Logo from '../../assets/Icon.png';
 import {InputField} from '@components';
 import {useForm} from 'react-hook-form';
 import {navigate, push} from '@commons/RootNavigation';
-import auth from '@react-native-firebase/auth';
+import {useDispatch, useSelector} from 'react-redux';
+import {auth} from '@commons/Firebase';
+
+import {signInWithEmailAndPassword} from 'firebase/auth';
 
 const Login = props => {
+  // const {todos, auth} = useSelector(state => state);
+  const dispatch = useDispatch();
   const {
     control,
     handleSubmit,
     formState: {errors},
   } = useForm();
   const OnpressLogin = async data => {
-    console.log('login Press');
     const {email, password} = data;
-    auth()
-      .signInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth, email, password)
       .then(data => {
-        console.log('User signed in!', data.uid);
+        console.log('success login with data ', data);
         navigate('App');
       })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-        }
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
-        console.error(error);
+      .catch(e => {
+        console.log(e);
       });
   };
 

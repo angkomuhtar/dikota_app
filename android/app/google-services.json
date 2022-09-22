@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "96028871588",
+    "project_id": "dikota-9c1dc",
+    "storage_bucket": "dikota-9c1dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96028871588:android:e17b1c42833476c01f4f31",
+        "android_client_info": {
+          "package_name": "com.app_dikota"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96028871588-vu9q0re4ka180ia1vrnbbhtakqjpt6ou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXKVcEQ6gyVPNKb5D5qlNoj4LMHJ3DphM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96028871588-vu9q0re4ka180ia1vrnbbhtakqjpt6ou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "96028871588-hsnf07lt5o9e3ek95sad3g6564u1eqjr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.dikota-mobile"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96028871588:android:bc22faa4fca5bd9e1f4f31",
+        "android_client_info": {
+          "package_name": "com.dikota_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96028871588-vu9q0re4ka180ia1vrnbbhtakqjpt6ou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXKVcEQ6gyVPNKb5D5qlNoj4LMHJ3DphM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96028871588-vu9q0re4ka180ia1vrnbbhtakqjpt6ou.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "96028871588-hsnf07lt5o9e3ek95sad3g6564u1eqjr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.dikota-mobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

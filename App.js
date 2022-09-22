@@ -5,8 +5,10 @@ import {theme} from '@commons/Theme';
 import Routes from './src/navigation/Routes';
 import {Provider} from 'react-redux';
 import store from '@redux/store';
+import {APP_ID} from '@env';
 
 const App = () => {
+  console.log(APP_ID);
   return (
     <Provider store={store}>
       <SafeAreaView style={{flex: 1}}>
