@@ -1,10 +1,20 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {HStack, Icon, Input, Text, View, VStack} from 'native-base';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Controller} from 'react-hook-form';
+import {TouchableOpacity} from 'react-native';
 
 const InputField = props => {
-  const {name, placeholder, iconName, label, control, rules = {}} = props;
+  const {
+    name,
+    textSecure = false,
+    placeholder,
+    iconName,
+    label,
+    control,
+    rules = {},
+  } = props;
+  const [eyes, setEyes] = useState(textSecure ? 'eye-off' : 'eye');
   return (
     <Controller
       control={control}
@@ -23,6 +33,7 @@ const InputField = props => {
           <Input
             {...props}
             onChangeText={onChange}
+            secureTextEntry={eyes == 'eye' ? false : true}
             onBlur={onBlur}
             variant="outline"
             onFocus={false}
@@ -34,6 +45,19 @@ const InputField = props => {
                 ml="4"
                 color="muted.400"
               />
+            }
+            InputRightElement={
+              textSecure && (
+                <TouchableOpacity
+                  onPress={() => setEyes(eyes == 'eye' ? 'eye-off' : 'eye')}>
+                  <Icon
+                    as={<Ionicons name={eyes} />}
+                    size={5}
+                    mr="4"
+                    color="muted.400"
+                  />
+                </TouchableOpacity>
+              )
             }
             size="xl"
             placeholder={placeholder}

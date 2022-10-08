@@ -6,10 +6,12 @@ import Home from '../screens/Home';
 import Setting from '@screens/Setting';
 import History from '@screens/History';
 import Chat from '@screens/ChatList';
+import {useSelector} from 'react-redux';
 
 const Tab = createBottomTabNavigator();
 
 const MainTab = () => {
+  const {userData} = useSelector(state => state.auth);
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -30,7 +32,7 @@ const MainTab = () => {
             label = 'Setting';
           } else if (route.name === 'chat') {
             iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
-            label = 'Setting';
+            label = 'Chat';
           }
 
           // You can return any component that you like here!
@@ -70,8 +72,11 @@ const MainTab = () => {
         },
       })}>
       <Tab.Screen name="home" component={Home} />
-      <Tab.Screen name="history" component={History} />
-      <Tab.Screen name="chat" component={Chat} />
+      {userData?.type == 'Mahasiswa' ? (
+        <Tab.Screen name="history" component={History} />
+      ) : (
+        <Tab.Screen name="chat" component={Chat} />
+      )}
       <Tab.Screen name="setting" component={Setting} />
     </Tab.Navigator>
   );

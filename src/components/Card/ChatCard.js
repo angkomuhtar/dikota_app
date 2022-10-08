@@ -3,9 +3,12 @@ import React from 'react';
 import {TouchableOpacity} from 'react-native';
 import {goBack, navigate} from '@commons/RootNavigation';
 
-const ChatCard = ({name, img}) => {
+const ChatCard = ({name, img, meet, mentor, id, researchId}) => {
   return (
-    <TouchableOpacity onPress={() => navigate('detailAppointment')}>
+    <TouchableOpacity
+      onPress={() =>
+        navigate('detailAppointment', {id, researchId, mentorType: mentor})
+      }>
       <HStack
         alignItems="center"
         space={3}
@@ -27,15 +30,16 @@ const ChatCard = ({name, img}) => {
           </Text>
           <HStack alignItems="center">
             <Text fontSize={10} fontWeight="extrabold" color="gray.500">
-              Pembimbing 2
+              Pembimbing {mentor}
             </Text>
             <Text> - </Text>
             <Text fontSize={10} fontWeight={400}>
-              2nd Meet
+              Proposal
             </Text>
           </HStack>
+
           <Text fontSize={10} fontWeight={800} color="gray.500">
-            12 Jun 11:30 - 12:00
+            {meet ? meet : 'Not Set'}
           </Text>
         </VStack>
       </HStack>

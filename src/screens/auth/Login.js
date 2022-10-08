@@ -58,7 +58,7 @@ const Login = props => {
         />
         <InputField
           secureType={true}
-          secureTextEntry={true}
+          textSecure={true}
           name="password"
           control={control}
           placeholder="Password"

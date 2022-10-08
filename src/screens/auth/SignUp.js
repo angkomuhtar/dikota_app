@@ -92,8 +92,8 @@ const SignUp = () => {
             rules={{
               required: 'required',
               pattern: {
-                value: /^[a-zA-Z ]*$/i,
-                message: 'Only Alphabet & Space',
+                value: /^[a-zA-Z ,.]*$/i,
+                message: 'Only Alphabet (space, comma, dot)',
               },
             }}
           />
