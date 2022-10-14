@@ -2,9 +2,10 @@ import {HStack, Icon, Text, View} from 'native-base';
 import React from 'react';
 import {Pressable, SafeAreaView} from 'react-native';
 import Ion from 'react-native-vector-icons/Ionicons';
+import McI from 'react-native-vector-icons/MaterialCommunityIcons';
 import {goBack, navigate} from '@commons/RootNavigation';
 
-const Header = ({back = false, setting = false, title}) => {
+const Header = ({back = false, setting = false, title, notif = false}) => {
   return (
     <SafeAreaView style={{backgroundColor: '#FFF'}}>
       <HStack
@@ -41,6 +42,12 @@ const Header = ({back = false, setting = false, title}) => {
           </Pressable>
         ) : (
           <View w={30} />
+        )}
+
+        {notif && (
+          <Pressable w={30} onPress={() => navigate('notification')}>
+            <Icon as={McI} name="bell-badge" size={25} color="primary.800" />
+          </Pressable>
         )}
       </HStack>
     </SafeAreaView>

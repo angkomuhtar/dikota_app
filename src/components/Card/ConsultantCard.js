@@ -1,10 +1,20 @@
-import {Avatar, Badge, HStack, Stack, Text, View, VStack} from 'native-base';
+import {
+  Avatar,
+  Badge,
+  HStack,
+  Image,
+  Stack,
+  Text,
+  View,
+  VStack,
+} from 'native-base';
 import React from 'react';
+import defaultPhoto from '@assets/default.png';
 
 const ConsultantCard = ({name, nim, jurusan, judul, img}) => {
   return (
     <HStack alignItems="center" space={4}>
-      <Avatar size="xl" source={img}></Avatar>
+      <Avatar size="xl" source={img || defaultPhoto}></Avatar>
       <VStack space={2} flex={1}>
         <Text fontSize="lg" fontWeight="bold">
           {name}

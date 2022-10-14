@@ -1,19 +1,10 @@
 import React, {useEffect} from 'react';
 import Header from '@components/Header';
 import {
-  Avatar,
-  Badge,
-  Button,
-  Center,
   Divider,
   HStack,
   Icon,
-  Image,
-  Modal,
-  Pressable,
   ScrollView,
-  Spinner,
-  Stack,
   Text,
   View,
   VStack,
@@ -21,7 +12,6 @@ import {
 import Ion from 'react-native-vector-icons/Ionicons';
 import ConsultantCard from '@components/Card/ConsultantCard';
 import {PermissionsAndroid, TouchableOpacity} from 'react-native';
-import Pdf from 'react-native-pdf';
 import {navigate} from '@commons/RootNavigation';
 import moment from 'moment';
 import DocumentPicker, {types} from 'react-native-document-picker';
@@ -30,47 +20,28 @@ import {useSelector} from 'react-redux';
 import {useState} from 'react';
 import storage from '@react-native-firebase/storage';
 import Loading from '@components/Modal/Loading';
+import ModalAlert from '@components/Modal/ModalAlert';
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
 
 const data = () => {
   let dataView = [];
   for (let index = 0; index < 7; index++) {
-    dataView.push(
-      <VStack
-        py={4}
-        px={6}
-        background={
-          moment().add(index, 'day').format('ddd') == 'Sat' ||
-          moment().add(index, 'day').format('ddd') == 'Sun'
-            ? 'primary.300'
-            : 'primary.100'
-        }
-        borderRadius="md"
-        alignItems="center">
-        <Text fontSize="md" fontWeight="semibold" color="white">
-          {moment().add(index, 'day').format('MMM')}
-        </Text>
-        <Text fontSize="4xl" fontWeight="bold" color="white" lineHeight="md">
-          {moment().add(index, 'day').format('DD')}
-        </Text>
-        <Text fontSize="md" fontWeight="semibold" color="white">
-          {moment().add(index, 'day').format('ddd')}
-        </Text>
-      </VStack>,
-    );
+    dataView.push({tgl: moment().add(index, 'day').format()});
   }
   return dataView;
 };
 
 const DetailAppointment = props => {
   let {id, researchId, mentorType} = props.route.params;
-  const {user} = useSelector(state => state.auth);
+  const {user, userData} = useSelector(state => state.auth);
   const [mentor, setMentor] = useState(null);
   const [mentoring, setMentoring] = useState([]);
   const [research, setResearch] = useState(null);
   const [channel, setChannel] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [alertModal, setAlertModal] = useState(false);
 
   const pickDoc = async () => {
     try {
@@ -92,7 +63,6 @@ const DetailAppointment = props => {
             createAt: moment().format(),
           });
         }
-        console.log(data.metadata.fullPath);
         setLoading(false);
       });
     } catch (error) {
@@ -100,6 +70,7 @@ const DetailAppointment = props => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     const sub = firestore()
       .collection('Research')
@@ -108,6 +79,12 @@ const DetailAppointment = props => {
       .onSnapshot(Result);
     return sub;
   }, []);
+
+  const Result = Query => {
+    Query.forEach(element => {
+      setResearch(element);
+    });
+  };
 
   useEffect(() => {
     const sub = firestore()
@@ -119,7 +96,6 @@ const DetailAppointment = props => {
   }, []);
 
   const Mentoring = Query => {
-    console.log(Query);
     setMentoring(Query.docs.map(doc => doc.data()));
   };
   const ErrMentoring = e => {
@@ -129,22 +105,28 @@ const DetailAppointment = props => {
   useEffect(() => {
     getMentor();
     getChannel(id);
-    getUrl();
   }, [id]);
-
-  const Result = Query => {
-    Query.forEach(element => {
-      setResearch(element);
-    });
-  };
 
   const getMentor = async () => {
     firestore()
       .collection('Users')
       .doc(id)
       .get()
-      .then(data => {
-        setMentor(data.data());
+      .then(async data => {
+        if (data.data()?.photo) {
+          let photos = await storage()
+            .ref(data.data()?.photo)
+            .getDownloadURL()
+            .then(data => {
+              return data;
+            });
+          setMentor({
+            ...data.data(),
+            photo: photos,
+          });
+        } else {
+          setMentor(data.data());
+        }
       });
   };
 
@@ -156,20 +138,10 @@ const DetailAppointment = props => {
       .get()
       .then(data => {
         data.forEach(e => {
-          console.log('data Channel', e.id);
           setChannel(e);
         });
       });
   };
-
-  const getUrl = async docs => {
-    let url = await storage()
-      .ref('Documents/dtfRx4OdM6gLATep0iCmSAOk9RC3-1665081232.pdf')
-      .getDownloadURL();
-
-    console.log('URL >>>', url);
-  };
-
   const downloadFile = async fileUrl => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -185,7 +157,9 @@ const DetailAppointment = props => {
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         const extension = fileUrl.split(/[#?]/)[0].split('.').pop().trim();
-        const localFile = `${RNFS.DocumentDirectoryPath}/temporaryfile.${extension}`;
+        const localFile = `${RNFS.DocumentDirectoryPath}/Draft${moment().format(
+          'x',
+        )}.${extension}`;
 
         const options = {
           fromUrl: fileUrl,
@@ -206,9 +180,18 @@ const DetailAppointment = props => {
       console.log(err);
     }
   };
+
   return (
     <>
       <Loading open={loading} />
+      <ModalAlert
+        open={alertModal}
+        message="Request Berhasil Terkirim, Penguji Akan mereview untuk menetukan Jadwal"
+        status="SUCCESS"
+        onPressOk={() => {
+          setAlertModal(false);
+        }}
+      />
       <Header back={true} title="Details" />
       <ScrollView p={4} flex={1}>
         <VStack space={4} pb={8}>
@@ -216,6 +199,7 @@ const DetailAppointment = props => {
             name={mentor?.name}
             nim={mentor?.nim}
             jurusan={mentor?.jurusan}
+            img={mentor?.photo ? {uri: mentor.photo} : false}
           />
           <VStack background="white" p={4} borderRadius="md">
             <HStack p={4} justifyContent="center">
@@ -245,19 +229,9 @@ const DetailAppointment = props => {
               </Text>
               {/* <Text fontSize={10}>12 Jun 22, 13:00 PM</Text> */}
             </HStack>
-            <VStack>
-              {mentoring.map(data => (
+            {mentoring.map((data, key) => (
+              <VStack key={key}>
                 <HStack py={4} space={2} alignItems="center">
-                  <Pdf
-                    // page={1}
-                    source={{
-                      uri: 'https://firebasestorage.googleapis.com/v0/b/dikota-9c1dc.appspot.com/o/Documents%2FdtfRx4OdM6gLATep0iCmSAOk9RC3-1665081232.pdf?alt=media&token=0f9f250f-1f3f-4240-b274-082d0bf9ce46',
-                    }}
-                    onError={() => {
-                      console.log('error');
-                    }}
-                    style={{height: 80, width: 60}}
-                  />
                   <VStack flex={1}>
                     <Text>Draft File</Text>
                     <Text fontSize={10}>
@@ -265,58 +239,173 @@ const DetailAppointment = props => {
                     </Text>
                   </VStack>
                   <TouchableOpacity
-                    onPress={() => {
-                      // alert('test');
+                    onPress={async () => {
                       downloadFile(
-                        'https://firebasestorage.googleapis.com/v0/b/dikota-9c1dc.appspot.com/o/Documents%2FdtfRx4OdM6gLATep0iCmSAOk9RC3-1665081232.pdf?alt=media&token=0f9f250f-1f3f-4240-b274-082d0bf9ce46',
+                        await storage().ref(data.file).getDownloadURL(),
                       );
                     }}>
-                    <Icon as={Ion} name="download-outline" size="2xl" />
+                    <Icon as={Ion} name="md-expand-outline" size="2xl" />
                   </TouchableOpacity>
                 </HStack>
-              ))}
-              <Divider />
-            </VStack>
+                <VStack>
+                  <Text fontSize="xs" color="gray.300">
+                    Mentor Review :
+                  </Text>
+                  <View
+                    mb={4}
+                    mt="1"
+                    p="4"
+                    rounded="sm"
+                    borderWidth="1"
+                    borderColor="gray.200">
+                    <Text fontSize="xs" color="gray.500" fontWeight="medium">
+                      {mentorType == 1
+                        ? data?.mentor1Review || 'No Review Yet'
+                        : data?.mentor2Review || 'No Review Yet'}
+                    </Text>
+                  </View>
+                </VStack>
+                <Divider />
+              </VStack>
+            ))}
           </VStack>
 
-          <VStack space={2}>
-            <Text
-              fontWeight="medium"
-              fontSize="md"
-              color="gray.300"
-              textTransform="uppercase">
-              Set Appointment
-            </Text>
-            <ScrollView
-              background="white"
-              borderRadius="md"
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}>
-              <HStack space={4} m={4}>
-                {data()}
-              </HStack>
-            </ScrollView>
-          </VStack>
+          {!channel?.data()?.appointDate && (
+            <VStack space={2}>
+              <Text
+                fontWeight="medium"
+                fontSize="md"
+                color="gray.300"
+                textTransform="uppercase">
+                Set Appointment
+              </Text>
+              <VStack p="4" background="white" borderRadius="md">
+                <Text mb={4}>Date : </Text>
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}>
+                  <HStack space={4}>
+                    {data().map(({tgl}) => (
+                      <TouchableOpacity
+                        disabled={
+                          ['Sun', 'Sat'].includes(moment(tgl).format('ddd'))
+                            ? true
+                            : false
+                        }
+                        onPress={() => {
+                          setSelectedDate(moment(tgl).format('YYYY-MM-DD'));
+                        }}>
+                        <VStack
+                          key={moment(tgl).format('YYMMDD')}
+                          py={4}
+                          px={6}
+                          background={
+                            moment(tgl).format('YYYY-MM-DD') == selectedDate
+                              ? 'primary.800'
+                              : moment(tgl).format('ddd') == 'Sat' ||
+                                moment(tgl).format('ddd') == 'Sun'
+                              ? 'gray.100'
+                              : 'primary.200'
+                          }
+                          borderRadius="md"
+                          alignItems="center">
+                          <Text
+                            fontSize="md"
+                            fontWeight="semibold"
+                            color="white">
+                            {moment(tgl).format('MMM')}
+                          </Text>
+                          <Text
+                            fontSize="4xl"
+                            fontWeight="bold"
+                            color="white"
+                            lineHeight="md">
+                            {moment(tgl).format('DD')}
+                          </Text>
+                          <Text
+                            fontSize="md"
+                            fontWeight="semibold"
+                            color="white">
+                            {moment(tgl).format('ddd')}
+                          </Text>
+                        </VStack>
+                      </TouchableOpacity>
+                    ))}
+                  </HStack>
+                </ScrollView>
+              </VStack>
+              <TouchableOpacity
+                disabled={selectedDate == null ? true : false}
+                onPress={() => {
+                  console.log(userData);
+                  setLoading(true);
+                  firestore()
+                    .collection('Request')
+                    .add({
+                      researchId: researchId,
+                      user: user.uid,
+                      mentor: id,
+                      date: selectedDate,
+                      status: 'waiting',
+                      text: `${
+                        userData.name
+                      } mengajukan Jadwal Bimbingan Pada Tanggal ${moment(
+                        selectedDate,
+                      ).format('DD MMM YY')}`,
+                    })
+                    .then(() => {
+                      setLoading(false);
+                      setAlertModal(true);
+                    });
+                }}>
+                <HStack
+                  borderRadius="full"
+                  w="full"
+                  background="primary.800"
+                  p={3}
+                  alignItems="center"
+                  justifyContent="center"
+                  space={1}>
+                  <Icon
+                    as={Ion}
+                    name="clipboard-sharp"
+                    color="white"
+                    size={5}
+                  />
+                  <Text fontWeight={800} fontSize={14} color="white">
+                    Make Appointment
+                  </Text>
+                </HStack>
+              </TouchableOpacity>
+            </VStack>
+          )}
         </VStack>
       </ScrollView>
-      <View p={4} pb={8}>
-        <TouchableOpacity
-          onPress={() => navigate('chatroom', {channelId: channel?.id})}>
-          <HStack
-            borderRadius="full"
-            w="full"
-            background="primary.800"
-            p={3}
-            alignItems="center"
-            justifyContent="center"
-            space={1}>
-            <Icon as={Ion} name="chatbubble-ellipses" color="white" size={5} />
-            <Text fontWeight={800} fontSize={14} color="white">
-              Start Chat
-            </Text>
-          </HStack>
-        </TouchableOpacity>
-      </View>
+      {channel?.data()?.appointDate && (
+        <View p={4} pb={8}>
+          <TouchableOpacity
+            onPress={() => navigate('chatroom', {channelId: channel?.id})}>
+            <HStack
+              borderRadius="full"
+              w="full"
+              background="primary.800"
+              p={3}
+              alignItems="center"
+              justifyContent="center"
+              space={1}>
+              <Icon
+                as={Ion}
+                name="chatbubble-ellipses"
+                color="white"
+                size={5}
+              />
+              <Text fontWeight={800} fontSize={14} color="white">
+                Start Chat
+              </Text>
+            </HStack>
+          </TouchableOpacity>
+        </View>
+      )}
     </>
   );
 };

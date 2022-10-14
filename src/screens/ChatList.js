@@ -16,7 +16,7 @@ const ChatList = () => {
   useEffect(() => {
     const Unsub = firestore()
       .collection('Channels')
-      // .where('mentor', '==', user.uid)
+      .where('mentor', '==', user.uid)
       .onSnapshot(onResult);
     return Unsub;
   }, []);

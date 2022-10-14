@@ -73,13 +73,16 @@ const Research = () => {
         mentor2: firestore().doc(`Users/${mentor2}`),
       })
       .then(async data => {
+        // console.log('DATA >>>>', data.id);
         await firestore().collection('Channels').add({
           user: user.uid,
           mentor: mentor,
+          researhId: data.id,
         });
         await firestore().collection('Channels').add({
           user: user.uid,
           mentor: mentor2,
+          researhId: data.id,
         });
         setLoading(false);
         goBack();

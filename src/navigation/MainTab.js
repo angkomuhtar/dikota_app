@@ -5,6 +5,7 @@ import Ion from 'react-native-vector-icons/Ionicons';
 import Home from '../screens/Home';
 import Setting from '@screens/Setting';
 import History from '@screens/History';
+import Mentoring from '@screens/Mentoring';
 import Chat from '@screens/ChatList';
 import {useSelector} from 'react-redux';
 
@@ -33,6 +34,9 @@ const MainTab = () => {
           } else if (route.name === 'chat') {
             iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
             label = 'Chat';
+          } else if (route.name === 'mentoring') {
+            iconName = focused ? 'document-text' : 'document-text-outline';
+            label = 'Mentoring';
           }
 
           // You can return any component that you like here!
@@ -75,7 +79,10 @@ const MainTab = () => {
       {userData?.type == 'Mahasiswa' ? (
         <Tab.Screen name="history" component={History} />
       ) : (
-        <Tab.Screen name="chat" component={Chat} />
+        <>
+          <Tab.Screen name="chat" component={Chat} />
+          <Tab.Screen name="mentoring" component={Mentoring} />
+        </>
       )}
       <Tab.Screen name="setting" component={Setting} />
     </Tab.Navigator>

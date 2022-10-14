@@ -1,24 +1,27 @@
 import {Button, Center, HStack, Image, Text, VStack} from 'native-base';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Logo from '../../assets/Icon.png';
 import {InputField} from '@components';
+import Loading from '@components/Modal/Loading';
 import {useForm} from 'react-hook-form';
 import {navigate, push} from '@commons/RootNavigation';
 import auth from '@react-native-firebase/auth';
 
 const Login = props => {
+  const [loading, setLoading] = useState(false);
   const {
     control,
     handleSubmit,
     formState: {errors},
   } = useForm();
   const OnpressLogin = async data => {
-    console.log('login Press');
+    setLoading(true);
     const {email, password} = data;
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(data => {
         console.log('User signed in!', data.uid);
+        setLoading(false);
         navigate('App');
       })
       .catch(error => {
@@ -34,6 +37,7 @@ const Login = props => {
 
   return (
     <VStack flex={1} justifyContent="center" p={4}>
+      <Loading open={loading} />
       <Center>
         <Image
           source={Logo}
